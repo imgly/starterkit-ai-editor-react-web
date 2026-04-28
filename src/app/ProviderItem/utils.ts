@@ -4,7 +4,7 @@
  * Helper functions for provider state management.
  */
 
-import type { AIProviders } from '../../imgly';
+import type { AIProviders } from '../ai-sidebar';
 
 /**
  * Deep clone the providers object to avoid mutations.
@@ -19,6 +19,7 @@ export function deepCloneProviders(obj: AIProviders): AIProviders {
         name: category.name,
         supportedModes: [...(category.supportedModes || [])],
         providers: category.providers.map((providerConfig) => ({
+          modelId: providerConfig.modelId,
           name: providerConfig.name,
           label: providerConfig.label,
           selected: providerConfig.selected,

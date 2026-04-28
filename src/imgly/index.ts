@@ -1,11 +1,18 @@
 /**
  * CE.SDK AI Editor - Initialization Module
  *
- * This module provides the main entry point for initializing the AI editor.
+ * Main entry point for wiring up the AI editor into a CE.SDK instance.
  * Supports Design, Photo, and Video editing modes.
+ *
+ * Before calling any of the init functions below, the hosting application
+ * is expected to have registered the `ly.img.ai.getToken` action on the
+ * CE.SDK instance — the gateway providers invoke it before every
+ * generation request. See `createAIProviders` in `./plugins/ai-providers`
+ * for the full rationale and the three common credential flows.
  *
  * @see https://img.ly/docs/cesdk/js/getting-started/
  * @see https://img.ly/docs/cesdk/js/plugins/ai-generation/
+ * @see https://img.ly/docs/cesdk/js/user-interface/ai-integration/gateway-provider-06df22/
  */
 
 import type CreativeEditorSDK from '@cesdk/cesdk-js';
@@ -26,32 +33,32 @@ import {
   VectorShapeAssetSource
 } from '@cesdk/cesdk-js/plugins';
 
-import { AiAppsConfig } from './plugins/ai-app/ai-apps';
-import type { AIProviders } from './plugins/ai-app/ai-providers';
+import { AiAppsConfig } from './plugins/ai-apps';
+import { AiPhotoEditConfig } from './plugins/ai-photo-edit';
+import type { AiProviderMap } from './plugins/ai-providers';
 import { DesignEditorConfig } from './config/design-editor/plugin';
 import { PhotoEditorConfig } from './config/photo-editor/plugin';
 import { VideoEditorConfig } from './config/video-editor/plugin';
 
 // ============================================================================
-// Plugins
+// Plugins & Config Re-Exports
 // ============================================================================
 
-// AI Apps Plugin
-export { AiAppsConfig } from './plugins/ai-app/ai-apps';
-
-// AI Providers
+export { AiAppsConfig } from './plugins/ai-apps';
+export { AiPhotoEditConfig } from './plugins/ai-photo-edit';
 export {
+  CURATED_MODELS,
+  capabilitiesForMode,
   createAIProviders,
-  getSelectedProviders
-} from './plugins/ai-app/ai-providers';
-
+  instantiateGatewayProvider
+} from './plugins/ai-providers';
 export type {
-  AIProviderCategory,
-  AIProviderConfig,
-  AIProviders
-} from './plugins/ai-app/ai-providers';
+  AiCapability,
+  AiEditorMode,
+  AiProviderMap,
+  GatewayProviderOptions
+} from './plugins/ai-providers';
 
-// Editor Config Plugins
 export { DesignEditorConfig } from './config/design-editor/plugin';
 export { PhotoEditorConfig } from './config/photo-editor/plugin';
 export { VideoEditorConfig } from './config/video-editor/plugin';
@@ -63,27 +70,22 @@ export { VideoEditorConfig } from './config/video-editor/plugin';
 /**
  * Initialize the AI Design Editor.
  *
- * Sets up CE.SDK with:
- * - Design editor configuration plugin
- * - Asset source plugins (images, shapes, text, etc.)
- * - AI apps for text and image generation
+ * Sets up CE.SDK with the design editor configuration, standard asset
+ * sources, and the AI Apps plugin wired to the given provider map. The
+ * caller is responsible for loading scene content (e.g. via
+ * `cesdk.loadFromArchiveURL(url)`) after this function resolves.
  *
- * @param cesdk - The CreativeEditorSDK instance
- * @param providers - AI provider configuration
- * @param sceneUrl - URL to the design scene archive
+ * @param cesdk     - The CreativeEditorSDK instance
+ * @param providers - Provider map for `AiApps({ providers: … })`; use
+ *                    `createAIProviders('Design')` for the curated defaults
  */
 export async function initAiDesignEditor(
   cesdk: CreativeEditorSDK,
-  providers: AIProviders,
-  sceneUrl: string
+  providers: AiProviderMap
 ): Promise<void> {
-  // Add design editor config plugin
   await cesdk.addPlugin(new DesignEditorConfig());
-
-  // Add theme
   cesdk.ui.setTheme('light');
 
-  // Add asset sources
   await Promise.all([
     cesdk.addPlugin(new ColorPaletteAssetSource()),
     cesdk.addPlugin(new TypefaceAssetSource()),
@@ -108,10 +110,6 @@ export async function initAiDesignEditor(
     })
   );
 
-  // Load design scene using instance method (handles auto-fit automatically)
-  await cesdk.loadFromArchiveURL(sceneUrl);
-
-  // Add AI apps plugin
   await cesdk.addPlugin(new AiAppsConfig(providers, 'Design'));
 }
 
@@ -122,29 +120,22 @@ export async function initAiDesignEditor(
 /**
  * Initialize the AI Photo Editor.
  *
- * Sets up CE.SDK with:
- * - Photo editor configuration plugin
- * - Asset source plugins (images, filters, effects, etc.)
- * - AI apps for text and image generation
+ * Sets up CE.SDK with the photo editor configuration, standard asset
+ * sources, and the AI Apps plugin wired to the given provider map. The
+ * caller is responsible for creating a scene (e.g. via
+ * `cesdk.createFromImage(url)`) after this function resolves.
  *
- * Photo mode creates a scene from an image rather than loading an archive.
- *
- * @param cesdk - The CreativeEditorSDK instance
- * @param providers - AI provider configuration
- * @param photoUrl - URL to the photo to edit
+ * @param cesdk     - The CreativeEditorSDK instance
+ * @param providers - Provider map for `AiApps({ providers: … })`; use
+ *                    `createAIProviders('Photo')` for the curated defaults
  */
 export async function initAiPhotoEditor(
   cesdk: CreativeEditorSDK,
-  providers: AIProviders,
-  photoUrl: string
+  providers: AiProviderMap
 ): Promise<void> {
-  // Add photo editor config plugin
   await cesdk.addPlugin(new PhotoEditorConfig());
-
-  // Add theme
   cesdk.ui.setTheme('dark');
 
-  // Add asset sources
   await Promise.all([
     cesdk.addPlugin(new ColorPaletteAssetSource()),
     cesdk.addPlugin(new TypefaceAssetSource()),
@@ -169,11 +160,7 @@ export async function initAiPhotoEditor(
     })
   );
 
-  // Create photo scene from image (Photo mode uses images, not archives)
-  await cesdk.createFromImage(photoUrl);
-
-  // Add AI apps plugin
-  await cesdk.addPlugin(new AiAppsConfig(providers, 'Photo'));
+  await cesdk.addPlugin(new AiPhotoEditConfig(providers));
 }
 
 // ============================================================================
@@ -183,27 +170,22 @@ export async function initAiPhotoEditor(
 /**
  * Initialize the AI Video Editor.
  *
- * Sets up CE.SDK with:
- * - Video editor configuration plugin
- * - Asset source plugins (images, video, audio, etc.)
- * - AI apps for text, image, video, and audio generation
+ * Sets up CE.SDK with the video editor configuration, video/audio asset
+ * sources, and the AI Apps plugin wired to the given provider map. The
+ * caller is responsible for loading scene content (e.g. via
+ * `cesdk.loadFromArchiveURL(url)`) after this function resolves.
  *
- * @param cesdk - The CreativeEditorSDK instance
- * @param providers - AI provider configuration
- * @param sceneUrl - URL to the video scene archive
+ * @param cesdk     - The CreativeEditorSDK instance
+ * @param providers - Provider map for `AiApps({ providers: … })`; use
+ *                    `createAIProviders('Video')` for the curated defaults
  */
 export async function initAiVideoEditor(
   cesdk: CreativeEditorSDK,
-  providers: AIProviders,
-  sceneUrl: string
+  providers: AiProviderMap
 ): Promise<void> {
-  // Add video editor config plugin
   await cesdk.addPlugin(new VideoEditorConfig());
-
-  // Add theme
   cesdk.ui.setTheme('light');
 
-  // Add asset sources (including video/audio)
   await Promise.all([
     cesdk.addPlugin(new ColorPaletteAssetSource()),
     cesdk.addPlugin(new TypefaceAssetSource()),
@@ -237,9 +219,5 @@ export async function initAiVideoEditor(
     })
   );
 
-  // Load video scene using instance method (handles auto-fit automatically)
-  await cesdk.loadFromArchiveURL(sceneUrl);
-
-  // Add AI apps plugin
   await cesdk.addPlugin(new AiAppsConfig(providers, 'Video'));
 }

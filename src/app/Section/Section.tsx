@@ -7,7 +7,7 @@
 import { useCallback } from 'react';
 import classNames from 'classnames';
 
-import type { AIProviderCategory } from '../../imgly';
+import type { AIProviderCategory } from '../ai-sidebar';
 import { ProviderItem } from '../ProviderItem/ProviderItem';
 import styles from '../Sidebar/Sidebar.module.css';
 
