@@ -1,6 +1,6 @@
 # React AI Editor Starter Kit
 
-Quickly add AI-powered visual editing and media generation to your web app — seamlessly connect any AI model. Built with [CE.SDK](https://img.ly/creative-sdk) by [IMG.LY](https://img.ly), runs entirely in the browser with AI providers via secure proxies.
+Quickly add AI-powered visual editing and media generation to your web app. Built with [CE.SDK](https://img.ly/creative-sdk) by [IMG.LY](https://img.ly) — runs entirely in the browser and talks to every AI model through the **IMG.LY AI Gateway**, so you only need one credential to unlock text, image, video, and audio generation.
 
 <p>
   <a href="https://img.ly/docs/cesdk/js/starterkits/ai-editor-4z6j9l/">Documentation</a>
@@ -33,26 +33,25 @@ unzip imgly-assets.zip -d public/
 rm imgly-assets.zip
 ```
 
-### Configure AI Proxies
+### Configure the AI Gateway
 
-AI providers require API keys that must NOT be exposed in client-side code. Create a `.env` file with your proxy URLs:
+The starterkit routes every AI request through the IMG.LY AI Gateway at `https://gateway.img.ly`. To enable AI features:
+
+1. Create an API key in the [IMG.LY dashboard](https://img.ly/dashboard).
+2. Copy `.env.example` to `.env` and paste the key.
 
 ```bash
 cp .env.example .env
 ```
 
 ```env
-# Fal.ai proxy (for Recraft, Seedream, NanoBanana, Ideogram, Gemini, Flux)
-VITE_FAL_AI_PROXY_URL=https://your-server.com/api/proxy/falai
-
-# Anthropic proxy (for Claude)
-VITE_ANTHROPIC_PROXY_URL=https://your-server.com/api/proxy/anthropic
-
-# OpenAI proxy (for GPT, GPT Image)
-VITE_OPENAI_PROXY_URL=https://your-server.com/api/proxy/openai
+# API key from https://img.ly/dashboard
+VITE_AI_API_KEY=sk_your_api_key_here
 ```
 
-See [AI Proxy Setup](https://img.ly/docs/cesdk/starterkits/ai-editor/#proxy-setup) for implementation examples.
+> **Heads up.** The key is passed to the gateway via `{ dangerouslyExposeApiKey }` and ends up in the browser. That's fine for local development. For production, swap this out for a short-lived token minted by your backend — see [Gateway Token Action](https://img.ly/docs/cesdk/js/plugins/ai-generation/) for the pattern used by the `ly.img.ai.getToken` action.
+
+When the starterkit is embedded inside the IMG.LY showcases demo, the hosting page provides a session token via `postMessage` and `VITE_AI_API_KEY` is ignored — no extra setup needed.
 
 ### Run the Development Server
 
@@ -105,22 +104,20 @@ See [Localization](https://img.ly/docs/cesdk/web/ui-styling/localization/) for s
 
 ### AI Providers
 
-Customize available AI providers in `src/imgly/plugins/ai-app/ai-providers.ts`:
+Every provider is a `GatewayProvider` bound to a single gateway model id. Add or swap models in `src/imgly/plugins/ai-app/ai-providers.ts`:
 
 ```typescript
 // Add a text-to-image provider
-text2imageProviders.push({
+text2image.providers.push({
   name: 'My Custom Model',
   label: 'Custom',
-  provider: () => FalAiImage.CustomModel({ proxyUrl: FAL_AI_PROXY_URL })
+  selected: true,
+  provider: () =>
+    ImageGatewayProvider('fal-ai/my-custom-model', gatewayConfig)
 });
 ```
 
-| Proxy | Supported Providers |
-|-------|---------------------|
-| `VITE_FAL_AI_PROXY_URL` | Recraft V3, Seedream V4, NanoBanana Pro, Ideogram V3, Gemini Flash Edit, Flux Pro Kontext |
-| `VITE_ANTHROPIC_PROXY_URL` | Claude Sonnet 4.5 |
-| `VITE_OPENAI_PROXY_URL` | GPT-4.1 Nano (text), GPT Image 1 (image) |
+The starterkit ships with a curated list across `text2text`, `text2image`, `image2image`, `text2video`, `image2video`, `text2speech`, and `text2sound`. The full model catalog is served by the gateway at `GET /v1/models` — any id from that response is a valid argument to `*GatewayProvider(modelId, gatewayConfig)`.
 
 ## Architecture
 
@@ -148,8 +145,10 @@ src/
 │   ├── index.ts                  # Editor initialization function
 │   └── plugins/
 │       └── ai-app/
-│           ├── ai-apps.ts
-│           └── ai-providers.ts
+│           ├── ai-apps.ts             # Registers AI plugin + dock/menu integration
+│           ├── ai-preflight.ts        # Startup credential check dialog
+│           ├── ai-providers.ts        # Gateway provider catalog
+│           └── ai-token.ts            # ly.img.ai.getToken action + postMessage bridge
 └── index.tsx                 # Application entry point
 ```
 
@@ -167,7 +166,7 @@ src/
 ## Prerequisites
 
 - **Node.js v20+** with npm – [Download](https://nodejs.org/)
-- **AI Proxy Server** – Secure server to hold API keys (see Configuration)
+- **IMG.LY API key** – Get one from the [IMG.LY dashboard](https://img.ly/dashboard)
 - **Supported browsers** – Chrome 114+, Edge 114+, Firefox 115+, Safari 15.6+
 
 ## Troubleshooting
@@ -177,8 +176,8 @@ src/
 | Editor doesn't load | Verify assets are accessible at `baseURL` |
 | Assets don't appear | Check `public/assets/` directory exists |
 | Watermark appears | Add your license key |
-| AI features disabled | Verify proxy URLs are configured in `.env` |
-| AI requests fail | Check proxy server is running and API keys are valid |
+| "AI features are disabled" dialog on startup | Set `VITE_AI_API_KEY` in `.env` using a key from the [IMG.LY dashboard](https://img.ly/dashboard) |
+| AI requests fail with an auth error | The key is missing, expired, or lacks access to the requested model |
 
 ## Documentation
 

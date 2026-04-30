@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import type { AIProviderCategory, AIProviders } from '../../imgly';
+import type { AIProviderCategory, AIProviders } from '../ai-sidebar';
 import { deepCloneProviders, hasChanges } from '../ProviderItem/utils';
 import { Section } from '../Section/Section';
 import styles from './Sidebar.module.css';
