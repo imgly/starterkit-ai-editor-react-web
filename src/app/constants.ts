@@ -19,11 +19,9 @@ import { resolveAssetPath } from './resolveAssetPath';
  */
 export const SCENE_URLS = {
   /** Design mode scene archive URL */
-  Design:
-    resolveAssetPath('/assets/ai_editor_design_v3.archive'),
+  Design: resolveAssetPath('/assets/ai_editor_design_v3.archive'),
   /** Video mode scene archive URL */
-  Video:
-    resolveAssetPath('/assets/ai_editor_video.archive')
+  Video: resolveAssetPath('/assets/ai_editor_video.archive')
 } as const;
 
 // ============================================================================

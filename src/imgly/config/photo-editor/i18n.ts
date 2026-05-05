@@ -31,7 +31,15 @@ export function setupTranslations(cesdk: CreativeEditorSDK): void {
     en: {
       'libraries.ly.img.sticker.label': 'Stickers',
       'libraries.ly.img.vector.shape.label': 'Shapes',
-      'libraries.ly.img.text.label': 'Text'
+      'libraries.ly.img.text.label': 'Text',
+
+      // Custom dock-button labels. The builder treats label strings as
+      // translation keys, so passing literals (e.g. `label: 'Crop'`)
+      // would log `Missing translation key …` on every re-render.
+      'ly.img.crop.dock.label': 'Crop',
+      'ly.img.adjustment.dock.label': 'Adjust',
+      'ly.img.filter.dock.label': 'Filter',
+      'ly.img.effects.dock.label': 'Effects'
     }
   });
 }

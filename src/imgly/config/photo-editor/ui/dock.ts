@@ -55,7 +55,7 @@ export function setupDock(cesdk: CreativeEditorSDK): void {
   cesdk.ui.registerComponent('ly.img.crop.dock', ({ builder: { Button } }) => {
     const isCropMode = cesdk.engine.editor.getEditMode() === 'Crop';
     Button('crop-button', {
-      label: 'Crop',
+      label: 'ly.img.crop.dock.label',
       icon: '@imgly/Crop',
       isSelected: isCropMode,
       onClick: () => {
@@ -79,7 +79,7 @@ export function setupDock(cesdk: CreativeEditorSDK): void {
       const panelId = '//ly.img.panel/inspector/adjustments';
       const isOpen = cesdk.ui.isPanelOpen(panelId);
       Button('adjustment-button', {
-        label: 'Adjust',
+        label: 'ly.img.adjustment.dock.label',
         icon: '@imgly/Adjustments',
         isSelected: isOpen,
         onClick: () => {
@@ -104,7 +104,7 @@ export function setupDock(cesdk: CreativeEditorSDK): void {
       const panelId = '//ly.img.panel/inspector/filters';
       const isOpen = cesdk.ui.isPanelOpen(panelId);
       Button('filter-button', {
-        label: 'Filter',
+        label: 'ly.img.filter.dock.label',
         icon: '@imgly/Filter',
         isSelected: isOpen,
         onClick: () => {
@@ -129,7 +129,7 @@ export function setupDock(cesdk: CreativeEditorSDK): void {
       const panelId = '//ly.img.panel/inspector/effects';
       const isOpen = cesdk.ui.isPanelOpen(panelId);
       Button('effects-button', {
-        label: 'Effects',
+        label: 'ly.img.effects.dock.label',
         icon: '@imgly/Effects',
         isSelected: isOpen,
         onClick: () => {
