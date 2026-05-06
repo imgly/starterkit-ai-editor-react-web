@@ -32,15 +32,9 @@
  */
 
 import { GatewayProvider as AudioGatewayProvider } from '@imgly/plugin-ai-audio-generation-web/gateway';
-import {
-  GatewayProvider as ImageGatewayProvider,
-  IMAGE_I2I_QUICK_ACTIONS
-} from '@imgly/plugin-ai-image-generation-web/gateway';
+import { GatewayProvider as ImageGatewayProvider } from '@imgly/plugin-ai-image-generation-web/gateway';
 import { GatewayProvider as TextGatewayProvider } from '@imgly/plugin-ai-text-generation-web/gateway';
-import {
-  GatewayProvider as VideoGatewayProvider,
-  VIDEO_I2V_QUICK_ACTIONS
-} from '@imgly/plugin-ai-video-generation-web/gateway';
+import { GatewayProvider as VideoGatewayProvider } from '@imgly/plugin-ai-video-generation-web/gateway';
 
 // ============================================================================
 // Gateway Configuration
@@ -168,15 +162,11 @@ export function instantiateGatewayProvider(
     case 'text2image':
       return ImageGatewayProvider(modelId, gatewayConfig);
     case 'image2image':
-      return ImageGatewayProvider(modelId, gatewayConfig, {
-        quickActions: IMAGE_I2I_QUICK_ACTIONS
-      });
+      return ImageGatewayProvider(modelId, gatewayConfig);
     case 'text2video':
       return VideoGatewayProvider(modelId, gatewayConfig);
     case 'image2video':
-      return VideoGatewayProvider(modelId, gatewayConfig, {
-        quickActions: VIDEO_I2V_QUICK_ACTIONS
-      });
+      return VideoGatewayProvider(modelId, gatewayConfig);
     case 'text2speech':
     case 'text2sound':
       return AudioGatewayProvider(modelId, gatewayConfig);
