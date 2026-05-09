@@ -101,7 +101,7 @@ function getApiKey(): string | undefined {
   const stored = getUserApiKey();
   if (stored != null) return stored;
 
-  const key = import.meta.env.VITE_AI_API_KEY;
+  const key = (undefined as string | undefined);
   return typeof key === 'string' && key.length > 0 ? key : undefined;
 }
 
@@ -197,7 +197,7 @@ const DEFAULT_GATEWAY_URL = 'https://gateway.img.ly';
  * every outbound request uses the same host.
  */
 export function getGatewayUrl(): string {
-  return import.meta.env.VITE_AI_GATEWAY_URL || DEFAULT_GATEWAY_URL;
+  return DEFAULT_GATEWAY_URL;
 }
 
 // ============================================================================

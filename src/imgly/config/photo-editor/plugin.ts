@@ -7,6 +7,7 @@
  * @example Basic usage
  * ```typescript
  * import CreativeEditorSDK from '@cesdk/cesdk-js';
+type CreativeEditorSDK = InstanceType<typeof CreativeEditorSDK>;
  * import { PhotoEditorConfig } from './plugin';
  *
  * const cesdk = await CreativeEditorSDK.create('#editor', config);
