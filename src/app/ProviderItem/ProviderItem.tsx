@@ -51,7 +51,6 @@ export function ProviderItem({
         [styles.selected]: provider.selected
       })}
     >
-      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events */}
       <label
         htmlFor={checkboxId}
         className={styles.checkbox}
