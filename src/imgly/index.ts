@@ -19,6 +19,7 @@ import type CreativeEditorSDK from '@cesdk/cesdk-js';
 
 import {
   BlurAssetSource,
+  ImageColorsAssetSource,
   ColorPaletteAssetSource,
   CropPresetsAssetSource,
   DemoAssetSources,
@@ -87,6 +88,7 @@ export async function initAiDesignEditor(
   cesdk.ui.setTheme('light');
 
   await Promise.all([
+    cesdk.addPlugin(new ImageColorsAssetSource()),
     cesdk.addPlugin(new ColorPaletteAssetSource()),
     cesdk.addPlugin(new TypefaceAssetSource()),
     cesdk.addPlugin(new TextAssetSource()),
@@ -137,6 +139,7 @@ export async function initAiPhotoEditor(
   cesdk.ui.setTheme('dark');
 
   await Promise.all([
+    cesdk.addPlugin(new ImageColorsAssetSource()),
     cesdk.addPlugin(new ColorPaletteAssetSource()),
     cesdk.addPlugin(new TypefaceAssetSource()),
     cesdk.addPlugin(new TextAssetSource()),
@@ -187,6 +190,7 @@ export async function initAiVideoEditor(
   cesdk.ui.setTheme('light');
 
   await Promise.all([
+    cesdk.addPlugin(new ImageColorsAssetSource()),
     cesdk.addPlugin(new ColorPaletteAssetSource()),
     cesdk.addPlugin(new TypefaceAssetSource()),
     cesdk.addPlugin(new TextAssetSource()),

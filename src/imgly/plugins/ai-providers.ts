@@ -162,10 +162,14 @@ export function instantiateGatewayProvider(
     case 'text2image':
       return ImageGatewayProvider(modelId, gatewayConfig);
     case 'image2image':
+      // Quick actions for image2image are derived from the model's
+      // schema capability — no explicit `quickActions` argument needed.
       return ImageGatewayProvider(modelId, gatewayConfig);
     case 'text2video':
       return VideoGatewayProvider(modelId, gatewayConfig);
     case 'image2video':
+      // Quick actions for image2video are derived from the model's
+      // schema capability — no explicit `quickActions` argument needed.
       return VideoGatewayProvider(modelId, gatewayConfig);
     case 'text2speech':
     case 'text2sound':
