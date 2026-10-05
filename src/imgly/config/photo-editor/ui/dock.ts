@@ -15,6 +15,7 @@
  * - `onClick` - Custom click handler (overrides default behavior)
  * - `isSelected` - Boolean or function to control selected state
  * - `isDisabled` - Boolean or function to control disabled state
+ * - `tooltip` - Text or translation key, or a function returning one, for the button tooltip
  * - `size` - Button size: `'normal'` | `'large'`
  * - `variant` - Button variant: `'regular'` | `'plain'`
  * - `color` - Button color: `'accent'` | `'danger'`
@@ -49,6 +50,21 @@ export function setupDock(cesdk: CreativeEditorSDK): void {
   // Configure photo editing tools and asset libraries
   // ============================================================================
 
+  // Adjust, Filter and Effects edit the page's image, so a page with a color
+  // or gradient fill disables them.
+  const pageHasNoImage = () => {
+    const { engine } = cesdk;
+    const page = engine.scene.getCurrentPage();
+    if (page == null || !engine.block.supportsFill(page)) return true;
+    const fill = engine.block.getFill(page);
+    if (!engine.block.isValid(fill)) return true;
+    const fillType = engine.block.getType(fill);
+    return (
+      fillType !== '//ly.img.ubq/fill/image' &&
+      fillType !== '//ly.img.ubq/fill/video'
+    );
+  };
+
   // #region Register Custom Dock Components
   // Photo tools need custom components since they open inspector panels, not asset libraries
 
@@ -78,9 +94,12 @@ export function setupDock(cesdk: CreativeEditorSDK): void {
     ({ builder: { Button } }) => {
       const panelId = '//ly.img.panel/inspector/adjustments';
       const isOpen = cesdk.ui.isPanelOpen(panelId);
+      const noImage = pageHasNoImage();
       Button('adjustment-button', {
         label: 'ly.img.adjustment.dock.label',
         icon: '@imgly/Adjustments',
+        isDisabled: noImage,
+        tooltip: noImage ? 'photoEditor.dock.requiresImage' : undefined,
         isSelected: isOpen,
         onClick: () => {
           if (isOpen) {
@@ -103,9 +122,12 @@ export function setupDock(cesdk: CreativeEditorSDK): void {
     ({ builder: { Button } }) => {
       const panelId = '//ly.img.panel/inspector/filters';
       const isOpen = cesdk.ui.isPanelOpen(panelId);
+      const noImage = pageHasNoImage();
       Button('filter-button', {
         label: 'ly.img.filter.dock.label',
         icon: '@imgly/Filter',
+        isDisabled: noImage,
+        tooltip: noImage ? 'photoEditor.dock.requiresImage' : undefined,
         isSelected: isOpen,
         onClick: () => {
           if (isOpen) {
@@ -128,9 +150,12 @@ export function setupDock(cesdk: CreativeEditorSDK): void {
     ({ builder: { Button } }) => {
       const panelId = '//ly.img.panel/inspector/effects';
       const isOpen = cesdk.ui.isPanelOpen(panelId);
+      const noImage = pageHasNoImage();
       Button('effects-button', {
         label: 'ly.img.effects.dock.label',
         icon: '@imgly/Effects',
+        isDisabled: noImage,
+        tooltip: noImage ? 'photoEditor.dock.requiresImage' : undefined,
         isSelected: isOpen,
         onClick: () => {
           if (isOpen) {
