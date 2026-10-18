@@ -1,6 +1,3 @@
-import { DEMO_ASSETS_BASE_URL } from '../imgly/demo-assets';
-export { DEMO_ASSETS_BASE_URL };
-
 /**
  * Demo Constants - Sample Data for AI Editor Starterkit
  *
@@ -10,6 +7,16 @@ export { DEMO_ASSETS_BASE_URL };
  * NOTE: These constants are intentionally kept outside the imgly/ folder
  * to separate demo-specific code from reusable configuration code.
  */
+/**
+ * Demo assets for this example (scene archives, …) are loaded from the
+ * IMG.LY CDN by default. To host them yourself, copy this kit's asset
+ * folder to your own CDN or server and change this constant — or set it to
+ * `''` and place the files in this app's `public/` directory. No trailing
+ * slash.
+ */
+export const DEMO_ASSETS_BASE_URL: string =
+  import.meta.env.VITE_DEMO_ASSETS_BASE_URL ||
+  'https://staticimgly.com/imgly/cesdk-web-examples-data/1.82.3-rc.0/starterkit-ai-editor';
 
 // ============================================================================
 // Scene URLs
@@ -21,7 +28,7 @@ export { DEMO_ASSETS_BASE_URL };
  */
 export const SCENE_URLS = {
   /** Design mode scene URL */
-  Design: `${DEMO_ASSETS_BASE_URL}/assets/ai_editor_design_v4/scene.scene`,
+  Design: `${DEMO_ASSETS_BASE_URL}/assets/ai_editor_design_v3/scene.scene`,
   /** Video mode scene URL */
   Video: `${DEMO_ASSETS_BASE_URL}/assets/ai_editor_video/scene.scene`
 } as const;
