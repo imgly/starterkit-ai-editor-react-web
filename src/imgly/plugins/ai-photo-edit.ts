@@ -80,14 +80,6 @@ export class AiPhotoEditConfig implements EditorPlugin {
     const factories = this.providers.image2image ?? [];
     if (factories.length === 0) return;
 
-    // The provider Select above the prompt is gated by a predicate that only
-    // `ImageGeneration` satisfies. This kit bypasses that plugin, so it sets
-    // the feature on instead of enabling it, otherwise the Select never shows.
-    cesdk.feature.set(
-      'ly.img.plugin-ai-image-generation-web.providerSelect',
-      true
-    );
-
     // ------------------------------------------------------------------
     // Await the provider factories, then mutate each provider in place
     // to convert the normal "generate onto canvas" flow into an in-place
