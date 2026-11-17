@@ -19,7 +19,7 @@ release/src/imgly/
 release/public/
 release/README.md
 release/.env.example
-release/.eslintrc.cjs
+release/.eslintrc.js
 release/LICENSE
 release/hero.webp
 release/index.html

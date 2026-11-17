@@ -1,7 +1,6 @@
 {
   "name": "starterkit-ai-editor",
   "version": "1.0.0",
-  "type": "module",
   "description": "CE.SDK AI Editor Starterkit",
   "scripts": {
     "dev": "vite",
@@ -10,13 +9,13 @@
     "check:syntax": "tsc --noEmit"
   },
   "dependencies": {
-    "@cesdk/cesdk-js": "^1.86.2",
-    "@imgly/plugin-ai-apps-web": "^1.86.2",
-    "@imgly/plugin-ai-audio-generation-web": "^1.86.2",
-    "@imgly/plugin-ai-generation-web": "^1.86.2",
-    "@imgly/plugin-ai-image-generation-web": "^1.86.2",
-    "@imgly/plugin-ai-text-generation-web": "^1.86.2",
-    "@imgly/plugin-ai-video-generation-web": "^1.86.2",
+    "@cesdk/cesdk-js": "^1.85.4",
+    "@imgly/plugin-ai-apps-web": "^1.85.4",
+    "@imgly/plugin-ai-audio-generation-web": "^1.85.4",
+    "@imgly/plugin-ai-generation-web": "^1.85.4",
+    "@imgly/plugin-ai-image-generation-web": "^1.85.4",
+    "@imgly/plugin-ai-text-generation-web": "^1.85.4",
+    "@imgly/plugin-ai-video-generation-web": "^1.85.4",
     "classnames": "^2.5.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
@@ -25,8 +24,8 @@
     "@types/node": "^22.0.0",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
-    "@vitejs/plugin-react": "^6.1.2",
+    "@vitejs/plugin-react": "^4.3.4",
     "typescript": "^5.0.0",
-    "vite": "^8.3.4"
+    "vite": "^6.0.3"
   }
 }
